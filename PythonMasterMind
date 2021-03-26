@@ -13,6 +13,7 @@ class Game:
             self.id = randint(100000,999999)
         self.allGames[self.id] = self  # adds id to dictionary
     def getboard(self):
+        print(str(self.board))
         return str(self.board)
     def checkpatterns(self, p):
         if checkpattern(p) == False:
