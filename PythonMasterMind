@@ -1,5 +1,6 @@
 from flask import Flask, request
 from random import randint
+import copy
 
 class Game:
     allGames = dict()  # contains all game id's
@@ -16,28 +17,32 @@ class Game:
         print(str(self.board))
         return str(self.board)
     def checkpatterns(self, p):
-        if checkpattern(p) == False:
+        if str(p).isnumeric() == False:
             return "Invalid input"
         check= list(map(int, str(p)))
+        print(check, " self.pattern: ",self.pattern)
         if self.pattern == check:
             return "bbbb"
-        checkp=[]
+        checkp=copy.deepcopy(check)
+        new_pattern=copy.deepcopy(self.pattern)
         cntSamePos=0
         cntSame=0
         for i in range(0,len(check)):
             if str(self.pattern[i]) == str(check[i]):
                 cntSamePos+=1
-                checkp.append(-1)
-            else:
-                checkp.append(check[i])
-        print(cntSamePos, " b ")
+                checkp[i]=-1
+                new_pattern[i]=-1
+            print(checkp," -> ", self.pattern)
+        print(cntSamePos, " b's ")
         for i in range (0,len(check)):
             if checkp[i]!=-1:
-                for j in range(0,len(checkp)):
-                    if checkp[j] == self.pattern[i] and checkp[i]!=-1:
+                for j in range(0,len(check)):
+                    if checkp[i] == new_pattern[j] and new_pattern[j]!=-1:
                         cntSame+=1
                         checkp[i]=-1
-                        break
+                        new_pattern[j]=-1
+                        print(checkp," -> ", self.pattern)
+                    
         print(cntSame, " w ")
         self.result=""
         for _ in range(0,cntSamePos):
@@ -58,6 +63,8 @@ class Game:
 
 app = Flask(__name__)
 def checkpattern(num):
+    if str(num).isnumeric() == False:
+        return False
     l=list(map(int, str(num)))
     for i in range(0,len(l)):
         if str(l[i]).isnumeric() == False or int(l[i])<0 or int(l[i])>6 :
@@ -84,6 +91,7 @@ def newgame():
         g.pattern=list(map(int, str(p)))
     elif p == "random":
         g.pattern = generatepattern()
+        print(g.pattern)
     return str(g.id)
 @app.route("/restart")
 def restart():
@@ -101,6 +109,7 @@ def restart():
         g.cnt=0
         g.board= ""
         g.pattern = generatepattern()
+        print(g.pattern)
         return "OK"
     return "Invalid"
 @app.route("/play")
@@ -110,7 +119,7 @@ def guess():
     if type(g) is str:
         return g
     p= request.args['pattern']
-    if g.cnt >= 10 or checkpattern(int(p)) == False:
+    if g.cnt >= 10 or checkpattern(str(p)) == False:
         return "Invalid"
     g.cnt+=1
     turnsLeft=str(10-int(g.cnt))
