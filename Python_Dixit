@@ -2,7 +2,6 @@ from flask import Flask, request
 from random import randint
 import random, json
 
-#'gil': ['14', '77', '79', '32', '49', '25'], 'rokcy': ['5', '47', '2', '20', '29', '12']
 class Game:
     allGames = dict()  # contains all game id's
 
@@ -98,15 +97,16 @@ class Game:
         print("hand has changed ",self.hand[self.playerNames[int(player)]], "   ", len(self.hand[self.playerNames[int(player)]]), " line 94")
 
     def playerlist(self):
+        print(self.playerNames)
         lst = []
         for value in self.playerNames.values():
             lst.append(value)
         return lst
     def mixCards(self):
         if len(self.cards) < int(self.numPlayers):
-            guess = dict()
-            for value in self.playerNames.values():
-                guess[value] = "hidden"
+            guess = []
+            for _ in self.playerNames.values():
+                guess.append("hidden")
             return guess
         else:
             self.hidden=True
@@ -115,14 +115,13 @@ class Game:
         print("cards length list is: ", len(self.cards), " amount of players -1 is :", self.numCurrentplaying - 1,
               " statement is: ", len(self.cards) != self.numCurrentplaying - 1 , " line 116")
         used = []
-        for _ in range(0, len(self.cards)):
+        for _ in range(0, len(self.cards)):#self.cards is the bluffs which get submitted, an array, if all have been submitted then the length should be numPlayers
             x = randint(0, num - 1)
             while x in used:
                 x = randint(0, num - 1)
             if len(self.cards) > x:
                 used.append(x)
                 mix.append(str(self.cards[x]))
-            # print("x is",x," cards is and its length is ", self.cards," ",len(self.cards))
         return mix
     def getGuesses(self):
         print("Cards are: ", self.cards, " amount of players are: ", self.numPlayers, " line 124")
@@ -130,7 +129,7 @@ class Game:
             guess = dict()
             for value in self.playerNames.values():
                 guess[value] = "hidden"
-            return guess
+            return json.dumps(guess)
         else:
             self.hidden=True
         if self.turn >= len(self.playerid) - 1:
@@ -233,7 +232,7 @@ def newgame():
         g.numPlayers = players
     else:
         g.numPlayers = 1
-    print(str(g.id), " line 205")
+    print(str(g.id), " line 238")
     return json.dumps({"gameID": g.id})
 
 
@@ -258,7 +257,7 @@ def getPlayerNames():
     if type(g) is str:
         return 'No such game'
     pl = g.playerlist()
-    print("player names are: ", pl, " line 230")
+    print("player names are: ", pl, " line 263")
     return json.dumps(pl)
 
 
@@ -297,7 +296,7 @@ def lead():
     if str(card).isnumeric():
         g.card = str(card)
         g.guess['REAL'] = str(card)
-        g.guess[g.playerNames[int(player)]] = "hidden"
+        g.guess[g.playerNames[int(player)]] = str(card)
         g.cards.append(str(card))
         print("storyTellers hand is: ", g.hand[g.playerNames[int(player)]], " line 271")
         g.hand[g.playerNames[int(player)]].remove(str(card))
@@ -369,7 +368,7 @@ def getGuesses():
     if type(g) is str:
         return 'No such game'
     guess = g.getGuesses()
-    print("guesses are: ", guess, " line 378")
+    print("guesses are: ", guess, " line 371")
     return guess
 
 
@@ -397,4 +396,4 @@ def getRoundInfo():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port='0000', debug=True)
+    app.run(host='0.0.0.0', port='8083', debug=True)
