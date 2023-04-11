@@ -143,5 +143,5 @@ def Gamestatus():
     return "Turn = " + g.turn
 
 
-# if __name__ == "__main__":
-#  app.run(host='0.0.0.0', port='8888', debug=True)
+def run_game():
+    app.run(host='0.0.0.0', port='8888', debug=True)
