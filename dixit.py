@@ -377,5 +377,5 @@ def getRoundInfo():
     return json.dumps({"error": str("Game " + str(g.id) + " has not started yet.")})
 
 
-# if __name__ == "__main__":
-# app.run(host='0.0.0.0', port='8888', debug=True)
+def run_game():
+    app.run(host='0.0.0.0', port='8888', debug=True)

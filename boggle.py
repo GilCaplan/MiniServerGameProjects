@@ -84,5 +84,5 @@ def newLetters():
     return g.letters
 
 
-# if __name__ == "__main__":
-# app.run(host='0.0.0.0', port='9999', debug=True)
+def run_game():
+    app.run(host='0.0.0.0', port='9999', debug=True)

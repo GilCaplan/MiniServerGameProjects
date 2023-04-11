@@ -152,5 +152,5 @@ def getBoard():
     return str(g.board)
 
 
-# if __name__ == "__main__":
-# app.run(host='0.0.0.0', port='0000', debug=True)
+def run_game():
+    app.run(host='0.0.0.0', port='0000', debug=True)
